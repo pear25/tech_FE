@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { GoogleMap, LoadScript, Polyline } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, Polyline, Marker } from '@react-google-maps/api';
 import { useStoreState } from 'easy-peasy';
+import { BiSolidMap } from "react-icons/bi"
 
 
 const containerStyle = {
@@ -8,24 +9,29 @@ const containerStyle = {
     height: '100%'
 };
 
+// const Marker = ({ lat, lng }) => (
+//     <div style={{ position: 'absolute', transform: 'translate(-50%, -50%)' }}>
+//         <BiSolidMap />
+//     </div>
+// );
+
 const Map = () => {
     const defaultCenter = {
         lat: -3.745,
         lng: -38.523
     };
 
-    const [mapCenter, setMapCenter] = useState(defaultCenter)
+
+
+
+    const [mapStart, setMapStart] = useState(defaultCenter)
+    const [mapEnd, setMapEnd] = useState(defaultCenter)
     const [polylinePath, setPolylinePath] = useState([]);
     const [mapZoom, setMapZoom] = useState(10)
 
     const status = useStoreState((state) => state.status)
     const mapData = useStoreState((state) => state.mapData)
 
-    const stringToInt = (object) => {
-        for (const key in object) {
-            object[key] = object[key].map((x) => Number(x))
-        }
-    }
 
 
     useEffect(() => {
@@ -34,15 +40,12 @@ const Map = () => {
                 setMapZoom(20)
                 const intPath = mapData.path.map(coords => coords.map(x => Number(x)));
                 const latLngPath = intPath.map(coords => ({ lat: coords[0], lng: coords[1] }));
-                setMapCenter(latLngPath[0]);
+                setMapStart(latLngPath[0]);
+                setMapEnd(latLngPath[latLngPath.length - 1])
                 setPolylinePath(latLngPath);
             }
-            // else {
-            //     setMapZoom(10)
-            //     setPolylinePath([])
-            //     setMapCenter(defaultCenter)
-            // }
         };
+        //asd
         setMap();
     }, [status, mapData]);
 
@@ -53,7 +56,7 @@ const Map = () => {
         >
             <GoogleMap
                 mapContainerStyle={containerStyle}
-                center={mapCenter}
+                center={mapStart}
                 zoom={mapZoom}
             >
                 {polylinePath.length > 0 && (
@@ -62,7 +65,10 @@ const Map = () => {
                         options={{ strokeColor: '#FF0000', strokeOpacity: 1.0, strokeWeight: 3 }}
                     />
                 )}
-                { /* Child components, such as markers, info windows, etc. */}
+                {mapStart.lat !== defaultCenter.lat && <Marker position={mapStart} />}
+                {mapEnd.lat !== defaultCenter.lat && <Marker position={mapEnd} />}
+
+
                 <></>
             </GoogleMap>
         </LoadScript>

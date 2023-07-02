@@ -76,14 +76,14 @@ const Form = () => {
     }
 
     return (
-        <>
-            <div className="p-8 pb-8 overflow-y-scroll">
+        <div className="">
+            <div className="p-8 pb-4 md:pb-8 col-span-1">
                 <div className="mb-4">
                     <div className="flex flex-row items-center">
                         <input
                             ref={startingRef}
                             onChange={() => handleInputChange(startingRef, setShowStartButton)}
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-4"
+                            className="shadow appearance-none border rounded md:w-full lg:w-sm py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-4"
                             id="start"
                             type="text"
                             placeholder="Starting Location" />
@@ -99,7 +99,7 @@ const Form = () => {
                         <input
                             ref={dropOffRef}
                             onChange={() => handleInputChange(dropOffRef, setShowDropButton)}
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline mr-4"
+                            className="shadow appearance-none border rounded md:w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline mr-4"
                             id="drop-off"
                             type="text"
                             placeholder="Drop off point" />
@@ -112,8 +112,10 @@ const Form = () => {
                 </div>
                 <div className="flex items-center justify-start">
                     <button
-                        className="bg-orange-400 hover:bg-orange-500 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-8"
+                        className="disabled:bg-orange-400 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-8"
                         type="button"
+                        disabled={status === "calling" || status === "busy" ||
+                            (!startingRef.current?.value && !dropOffRef.current?.value)}
                         onClick={() => handleSubmitForm({
                             origin: startingRef.current.value,
                             destination: dropOffRef.current.value
@@ -121,16 +123,19 @@ const Form = () => {
                         Submit
                     </button>
                     <button
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                        className="disabled:bg-blue-300 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                         onClick={() => handleResetForm()}
+                        disabled={(!startingRef.current?.value && !dropOffRef.current?.value)}
                     >
                         Reset
                     </button>
 
                 </div>
             </div>
-            <AlertBox status={status} />
-        </>
+            <div className="h-full">
+                <AlertBox status={status} />
+            </div>
+        </div>
 
     )
 }
