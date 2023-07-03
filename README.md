@@ -1,5 +1,4 @@
-<img width="678" alt="image" src="https://github.com/pear25/tech_FE/assets/82131191/8fe9ef21-359f-469c-8dd9-3e0cb78dabba"># tech_FE
-
+# TECH_FE (PIERSON TARRANTINO LIMAS)
 > How to start
 ### clone repo and install dependencies
 
