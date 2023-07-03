@@ -37,8 +37,8 @@ And so, I have used the localhost URL (http://localhost:8080) instead of the rem
 
 I have defined the usage of the remote URL at /src/api/index.js
 but I have used localhost:8080 instead as seen in /src/components/Form.jsx
-GET REQUEST --> see Line 33 & 34
-POST REQUEST --> see Line 63 & 64
+GET REQUEST --> see Line 35 & 36
+POST REQUEST --> see Line 66 & 67
 
 On another note, Polyline removal works in production build but not dev mode
 
