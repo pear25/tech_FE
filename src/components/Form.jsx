@@ -9,6 +9,7 @@ import AlertBox from "./AlertBox";
 const Form = () => {
     // Global state & dispatchers
     const status = useStoreState((state) => state.status)
+    const mapData = useStoreState((state) => state.mapData)
     const dispatchMapData = useStoreActions((actions) => actions.setMapData)
     const dispatchStatus = useStoreActions((actions) => actions.setStatus)
     // Form refs
@@ -135,7 +136,7 @@ const Form = () => {
                 </div>
             </div>
             <div className="h-full">
-                <AlertBox status={status} />
+                <AlertBox status={status} mapData={mapData} />
             </div>
         </div>
 

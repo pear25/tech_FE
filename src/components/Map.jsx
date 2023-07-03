@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { GoogleMap, LoadScript, Polyline, Marker } from '@react-google-maps/api';
 import { useStoreState } from 'easy-peasy';
 
+//default map options
+const containerStyle = {
+    width: '100%',
+    height: '100%'
+};
 
-
+const defaultCenter = {
+    lat: -3.745,
+    lng: -38.523
+};
 
 const Map = () => {
-    const containerStyle = {
-        width: '100%',
-        height: '100%'
-    };
-
-    const defaultCenter = {
-        lat: -3.745,
-        lng: -38.523
-    };
+    const polylineRef = useRef(null);
 
     const [mapZoom, setMapZoom] = useState(10)
     const [mapCenter, setMapCenter] = useState(defaultCenter)
@@ -25,7 +25,6 @@ const Map = () => {
 
     const status = useStoreState((state) => state.status)
     const mapData = useStoreState((state) => state.mapData)
-
 
     const getMarkerLabel = index => ({
         text: `${index + 1}`,
@@ -42,6 +41,7 @@ const Map = () => {
 
     //set map based on API result
     useEffect(() => {
+        console.log(polylineRef.current)
         setPolylinePath([])
         const setMap = async () => {
             if (status === 'success' && mapData?.path?.length) {
@@ -55,10 +55,15 @@ const Map = () => {
         };
         setMap();
 
-        if (status === "server error" || status === "fail") {
+        if (status === "server error" || status === "fail" || status === "calling") {
             setPolylinePath([])
-            // setMapEnd(defaultCenter)
-            // setMapStart(defaultCenter)
+
+            if (polylineRef.current != null && polylineRef.current.id === 'polyline') {
+                polylineRef.current.setMap(null); //this doesn't work somehow..
+            }
+            console.log('outer')
+            setMapEnd(defaultCenter)
+            setMapStart(defaultCenter)
         }
     }, [status, mapData]);
 
@@ -90,8 +95,6 @@ const Map = () => {
         }
     }, [loadingDirections, mapStart, mapEnd]);
 
-
-
     return (
         <LoadScript
             googleMapsApiKey="AIzaSyCfTVRIwC5QnMQGJ-hx05JPdBzK7LT2XjE"
@@ -106,6 +109,9 @@ const Map = () => {
                         <Marker position={mapStart} />
                         <Marker position={mapEnd} />
                         <Polyline
+                            key={polylinePath.length > 0 ? 'polyline' : `${new Date().getTime()}-polyline`}
+                            id="polyline"
+                            ref={polylineRef}
                             path={polylinePath}
                             options={{ strokeColor: '#FF0000', strokeOpacity: 1.0, strokeWeight: 3 }}
                         />
@@ -121,14 +127,10 @@ const Map = () => {
                         ))}
                     </>
                 )}
-                { }
-                { }
-
-
                 <></>
             </GoogleMap>
         </LoadScript>
     )
 }
 
-export default Map
+export default React.memo(Map)
