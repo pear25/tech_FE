@@ -1,7 +1,6 @@
 import Form from './components/Form'
 import Map from './components/Map'
 
-
 function App() {
   return (
     <div className='grid grid-flow-row grid-cols-none grid-rows-6 md:grid-rows-none md:grid-flow-col md:grid-cols-3 lg:grid-cols-4 gap-4 h-screen overflow-y-scroll'>

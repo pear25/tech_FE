@@ -58,8 +58,9 @@ const Map = () => {
             setPolylinePath([])
 
             if (polylineRef.current != null && polylineRef.current.id === 'polyline') {
-                polylineRef.current.setMap(null); //this doesn't work somehow..
+                polylineRef.current.setMap(null);
             }
+
             setMapEnd(defaultCenter)
             setMapStart(defaultCenter)
         }

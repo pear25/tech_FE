@@ -1,8 +1,8 @@
 import { action, createStore } from 'easy-peasy';
 
 const store = createStore({
-    status: 'initial',
-    mapData: { "map": "data" },
+    status: '',
+    mapData: {},
     setStatus: action((state, payload) => {
         state.status = payload
     }),

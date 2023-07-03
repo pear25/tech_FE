@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from "react"
-import axios from "axios"
+import { useRef, useState } from "react"
 import * as API from "../api"
 import { GrClose } from 'react-icons/gr';
 import { useStoreState, useStoreActions } from "easy-peasy";
@@ -30,7 +29,7 @@ const Form = () => {
     const handleSubmitForm = async (data) => {
         const getRouteFromToken = async (token) => {
             try {
-                const getResponse = await axios.get(`http://localhost:8080/route/${token}`)
+                const getResponse = API.getRoute(token)
                 // Recall API logic
                 if (getResponse.data.status === "in progress") {
                     dispatchStatus("busy")
@@ -59,7 +58,7 @@ const Form = () => {
         dispatchStatus("")
         let token
         try {
-            const res = await axios.post("http://localhost:8080/route", data)
+            const res = API.routingRequest(data)
             dispatchStatus("calling")
             token = res.data.token
         }
