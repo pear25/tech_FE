@@ -1,5 +1,5 @@
-# TECH_FE (PIERSON TARRANTINO LIMAS)
-> How to start
+# PIERSON TARRANTINO LIMAS (FE-FOCUS)
+## How to start
 ### clone repo and install dependencies
 
 ```
@@ -25,6 +25,11 @@ The API key created dialog displays your newly created API key.
 Click Close.
 
 3. The new API key is listed on the Credentials page under API keys.
+4. Replace newly generated key with "YOUR_API_KEY_HERE" in line 99 (/src/components/Map)
+
+> ## FAQs
+### HOSTED AT: https://tech-fe.vercel.app/
+### GOOGLE_MAP_API_KEY not restricted in .env, issues with Google Maps API
 
 > ## !!!IMPORTANT!!!
 
@@ -36,8 +41,11 @@ I have encountered some issues when using the mock api provided (https://mock-ap
 And so, I have used the localhost URL (http://localhost:8080) instead of the remote URL:
 
 I have defined the usage of the remote URL at /src/api/index.js
+<br />
 but I have used localhost:8080 instead as seen in /src/components/Form.jsx
+<br />
 GET REQUEST --> see Line 35 & 36
+<br />
 POST REQUEST --> see Line 66 & 67
 
 On another note, Polyline removal works in production build but not dev mode
