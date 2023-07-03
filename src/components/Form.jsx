@@ -3,6 +3,7 @@ import * as API from "../api"
 import { GrClose } from 'react-icons/gr';
 import { useStoreState, useStoreActions } from "easy-peasy";
 import AlertBox from "./AlertBox";
+import axios from "axios";
 
 
 const Form = () => {
@@ -29,7 +30,8 @@ const Form = () => {
     const handleSubmitForm = async (data) => {
         const getRouteFromToken = async (token) => {
             try {
-                const getResponse = API.getRoute(token)
+                // const getResponse = API.getRoute(token)
+                const getResponse = await axios.get(`http://localhost:8080/route/${token}`)
                 // Recall API logic
                 if (getResponse.data.status === "in progress") {
                     dispatchStatus("busy")
@@ -58,7 +60,8 @@ const Form = () => {
         dispatchStatus("")
         let token
         try {
-            const res = API.routingRequest(data)
+            // const res = API.routingRequest(data)
+            const res = await axios.post('http://localhost:8080/route', data)
             dispatchStatus("calling")
             token = res.data.token
         }
