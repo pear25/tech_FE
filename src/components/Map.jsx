@@ -96,7 +96,8 @@ const Map = () => {
 
     return (
         <LoadScript
-            googleMapsApiKey="YOUR_API_KEY_HERE"
+            //using environment variables blocks some features
+            googleMapsApiKey={'AIzaSyCfTVRIwC5QnMQGJ-hx05JPdBzK7LT2XjE'} //import.meta.env.GOOGLE_MAPS_API_KEY
         >
             <GoogleMap
                 mapContainerStyle={containerStyle}
