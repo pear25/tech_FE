@@ -17,7 +17,7 @@ npm run dev (start on localhost:5173)
 npm run build
 npm run preview
 ```
-> How to generate GOOGLE MAPS API KEY
+> ## How to generate GOOGLE MAPS API KEY
 1. Go to the Google Maps Platform > Credentials page.
 
 2. On the Credentials page, click Create credentials > API key.
@@ -26,7 +26,7 @@ Click Close.
 
 3. The new API key is listed on the Credentials page under API keys.
 
-> #!!!IMPORTANT!!!
+> ## !!!IMPORTANT!!!
 
 I have encountered some issues when using the mock api provided (https://mock-api.dev.lalamove.com)
 <img width="678" alt="image" src="https://github.com/pear25/tech_FE/assets/82131191/c2e46758-2a6d-4e81-b7f2-67ef2282d3ea">
