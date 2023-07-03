@@ -73,6 +73,8 @@ const Form = () => {
     const handleResetForm = () => {
         startingRef.current.value = ""
         dropOffRef.current.value = ""
+        setShowStartButton(false)
+        setShowDropButton(false)
     }
 
     return (
@@ -84,7 +86,6 @@ const Form = () => {
                             ref={startingRef}
                             onChange={() => handleInputChange(startingRef, setShowStartButton)}
                             className="shadow appearance-none border rounded md:w-full lg:w-sm py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mr-4"
-                            id="start"
                             type="text"
                             placeholder="Starting Location" />
                         {showStartButton && <GrClose
@@ -100,7 +101,6 @@ const Form = () => {
                             ref={dropOffRef}
                             onChange={() => handleInputChange(dropOffRef, setShowDropButton)}
                             className="shadow appearance-none border rounded md:w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline mr-4"
-                            id="drop-off"
                             type="text"
                             placeholder="Drop off point" />
                         {showDropButton && <GrClose
@@ -112,10 +112,13 @@ const Form = () => {
                 </div>
                 <div className="flex items-center justify-start">
                     <button
-                        className="disabled:bg-orange-400 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-8"
+                        className="
+                        disabled:bg-orange-400 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-8"
                         type="button"
-                        disabled={status === "calling" || status === "busy" ||
-                            (!startingRef.current?.value && !dropOffRef.current?.value)}
+                        disabled={
+                            status === "calling" ||
+                            status === "busy" ||
+                            (!startingRef.current?.value || !dropOffRef.current?.value)}
                         onClick={() => handleSubmitForm({
                             origin: startingRef.current.value,
                             destination: dropOffRef.current.value
@@ -129,7 +132,6 @@ const Form = () => {
                     >
                         Reset
                     </button>
-
                 </div>
             </div>
             <div className="h-full">
