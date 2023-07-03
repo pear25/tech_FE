@@ -96,7 +96,7 @@ const Map = () => {
 
     return (
         <LoadScript
-            googleMapsApiKey="AIzaSyCfTVRIwC5QnMQGJ-hx05JPdBzK7LT2XjE"
+            googleMapsApiKey="YOUR_API_KEY_HERE"
         >
             <GoogleMap
                 mapContainerStyle={containerStyle}

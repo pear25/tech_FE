@@ -18,6 +18,8 @@ const Form = () => {
     // Button states
     const [showStartButton, setShowStartButton] = useState(false)
     const [showDropButton, setShowDropButton] = useState(false)
+    // Get api fail message
+    const [errorMessage, setErrorMessage] = useState(null)
 
     const handleInputChange = (ref, setShowButton) => {
         if (!!ref.current.value) {
@@ -39,6 +41,7 @@ const Form = () => {
                 }
                 // Stop API call
                 if (getResponse.data.status === "failure") {
+                    setErrorMessage(getResponse.data.error)
                     dispatchStatus("fail")
                     return
                 }
@@ -138,7 +141,7 @@ const Form = () => {
                 </div>
             </div>
             <div className="h-full">
-                <AlertBox status={status} mapData={mapData} />
+                <AlertBox status={status} mapData={mapData} errorMessage={errorMessage} />
             </div>
         </div>
 

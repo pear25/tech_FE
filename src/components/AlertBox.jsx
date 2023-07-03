@@ -1,12 +1,12 @@
 import React from "react"
 
-const AlertBox = ({ status, mapData }) => {
+const AlertBox = ({ status, mapData, errorMessage }) => {
     return (
         <div className="px-4">
             {status === "fail" &&
                 <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="fail">
                     <p className="font-bold">Request failed</p>
-                    <p>An unexpected error occured</p>
+                    <p>{errorMessage}</p>
                 </div>
             }
             {status === "busy" &&

@@ -1,10 +1,11 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, fireEvent, waitFor } from "@testing-library/react";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter"
 import { StoreProvider } from 'easy-peasy';
 import store from "../store/store.jsx";
 import Form from "../components/Form.jsx";
+import { vi, describe, expect, it } from "vitest";
 import '@testing-library/jest-dom/extend-expect';
 
 describe('Form', () => {
@@ -30,50 +31,116 @@ describe('Form', () => {
     });
 
     it("is disabled when input fields are empty", () => {
-        const { getByPlaceholderText, getByTestId, getByText } =
+        const screen =
             render(<StoreProvider store={store}>
                 <Form />
             </StoreProvider>)
-        const startingInput = getByPlaceholderText("Starting Location");
-        const dropOffInput = getByPlaceholderText("Drop off point");
+        const startingInput = screen.getByPlaceholderText("Starting Location");
+        const dropOffInput = screen.getByPlaceholderText("Drop off point");
 
-        expect(getByText("Submit").disabled).toBe(true);
+        expect(screen.getByText("Submit").disabled).toBe(true);
 
         fireEvent.change(startingInput, { target: { value: "Innocentre" } });
-        expect(getByText("Submit").disabled).toBe(true);
+        expect(screen.getByText("Submit").disabled).toBe(true);
 
         fireEvent.change(dropOffInput, { target: { value: "HKIA Terminal 1" } });
-        expect(getByText("Submit").disabled).toBe(false);
+        expect(screen.getByText("Submit").disabled).toBe(false);
 
-        fireEvent.click(getByTestId("starting-clear"))// Clear either input
-        expect(getByText("Submit").disabled).toBe(true);
+        fireEvent.click(screen.getByTestId("starting-clear"))// Clear either input
+        expect(screen.getByText("Submit").disabled).toBe(true);
     });
 });
 
 describe("handle submit form function", () => {
     const mockAxios = new MockAdapter(axios)
-    beforeEach(() => {
-        <StoreProvider store={store}>
-            <Form />
-        </StoreProvider>
-    })
+    const data = {
+        origin: "Innocentre",
+        destination: "Hong Kong International Airport"
+    }
+    const token = "123445"
+
     afterEach(() => {
         mockAxios.reset();
     });
 
-    it("handles error response from the server", async () => {
-
-        const { getByPlaceholderText } =
+    it("post request success is handled properly", async () => {
+        const screen =
             render(<StoreProvider store={store}>
                 <Form />
             </StoreProvider>)
-        const startingInput = getByPlaceholderText("Starting Location");
-        const dropOffInput = getByPlaceholderText("Drop off point");
-        // Set up mock error API response
-        const data = {
-            origin: "Innocentre",
-            destination: "HKIA Terminal 1",
-        };
+        mockAxios.onPost('http://localhost:8080/route', data).reply(200, { token: token });
+        const startingInput = screen.getByPlaceholderText("Starting Location");
+        const dropOffInput = screen.getByPlaceholderText("Drop off point");
+        fireEvent.change(startingInput, {
+            target: { value: data.origin },
+        });
+        fireEvent.change(dropOffInput, {
+            target: { value: data.destination },
+        });
+        fireEvent.click(screen.getByText("Submit"));
+        await waitFor(() => {
+            const status = store.getState().status
+            expect(status).toEqual('calling');
+        });
+    })
+
+    it("post request error is handled properly", async () => {
+        const screen =
+            render(<StoreProvider store={store}>
+                <Form />
+            </StoreProvider>)
+        mockAxios.onPost('http://localhost:8080/route', data).reply(500);
+        const startingInput = screen.getByPlaceholderText("Starting Location");
+        const dropOffInput = screen.getByPlaceholderText("Drop off point");
+        fireEvent.change(startingInput, {
+            target: { value: data.origin },
+        });
+        fireEvent.change(dropOffInput, {
+            target: { value: data.destination },
+        });
+        fireEvent.click(screen.getByText("Submit"));
+        await waitFor(() => {
+            const status = store.getState().status
+            expect(status).toEqual('server error');
+        });
+    })
+
+    it("get request error is handled properly", async () => {
+        const screen =
+            render(<StoreProvider store={store}>
+                <Form />
+            </StoreProvider>)
+        mockAxios.onGet(`http://localhost:8080/route/${token}`).reply(500);
+        const startingInput = screen.getByPlaceholderText("Starting Location");
+        const dropOffInput = screen.getByPlaceholderText("Drop off point");
+        fireEvent.change(startingInput, {
+            target: { value: data.origin },
+        });
+        fireEvent.change(dropOffInput, {
+            target: { value: data.destination },
+        });
+        fireEvent.click(screen.getByText("Submit"));
+        await waitFor(() => {
+            const status = store.getState().status
+            expect(status).toBe("server error")
+        });
+    });
+
+    it("get request success is handled properly", async () => {
+        const screen =
+            render(<StoreProvider store={store}>
+                <Form />
+            </StoreProvider>)
+        const successResponse = {
+            status: "success",
+            path: [['22.234511', '24.332145']],
+            total_distance: 20000,
+            total_time: 1800
+        }
+        mockAxios.onPost('http://localhost:8080/route').reply(200, { token: token })
+        mockAxios.onGet(`http://localhost:8080/route/${token}`).reply(200, { successResponse });
+        const startingInput = screen.getByPlaceholderText("Starting Location");
+        const dropOffInput = screen.getByPlaceholderText("Drop off point");
 
         fireEvent.change(startingInput, {
             target: { value: data.origin },
@@ -81,50 +148,104 @@ describe("handle submit form function", () => {
         fireEvent.change(dropOffInput, {
             target: { value: data.destination },
         });
-
         fireEvent.click(screen.getByText("Submit"));
 
-        mockAxios.onPost("http://localhost:8080/route", data).reply(500);
+        waitFor(() => {
+            const status = store.getState().status
+            expect(axios.post).toHaveBeenCalledTimes(1)
+            expect(axios.get).toHaveBeenCalledTimes(1)
+            expect(status).toEqual("success")
+        })
 
-        await waitFor(() => {
-            const status = store.getState().status;
-            expect(status).toBeDefined();
-            expect(status).toEqual('server error');
-        });
     })
 
-    it("to indicate successfully calling api", async () => {
-        const { getByPlaceholderText } =
+    it("get request busy is handled properly", async () => {
+        const screen =
             render(<StoreProvider store={store}>
                 <Form />
             </StoreProvider>)
-        // Set up mock error API response
-        const data = {
-            origin: "Innocentre",
-            destination: "HKIA Terminal 1",
-        };
-        const token = "12345";
-        const routeResponse = {
-            path: ["Innocentre", "HKIA Terminal 1"],
-            total_distance: 1000,
-            total_time: 120,
-        };
+        const busyResponse = {
+            status: "in progress",
+        }
+        mockAxios.onPost('http://localhost:8080/route').reply(200, { token: token })
+        mockAxios.onGet(`http://localhost:8080/route/${token}`).reply(200, { busyResponse });
+        const startingInput = screen.getByPlaceholderText("Starting Location");
+        const dropOffInput = screen.getByPlaceholderText("Drop off point");
 
-        mockAxios.onPost("http://localhost:8080/route", data).reply(200, { token });
-        mockAxios.onGet(`http://localhost:8080/route/${token}`).reply(200, routeResponse);
-
-        fireEvent.change(screen.getByPlaceholderText("Starting Location"), {
+        fireEvent.change(startingInput, {
             target: { value: data.origin },
         });
-        fireEvent.change(screen.getByPlaceholderText("Drop off point"), {
+        fireEvent.change(dropOffInput, {
             target: { value: data.destination },
         });
         fireEvent.click(screen.getByText("Submit"));
-        await waitFor(() => {
-            const status = store.getState().status;
-            expect(status).toBeDefined();
-            expect(status).toEqual('success');
-        });
+
+        waitFor(() => {
+            const status = store.getState().status
+            expect(axios.post).toHaveBeenCalledTimes(1)
+            expect(axios.get).toHaveBeenCalledTimes(2)
+            expect(status).toEqual("success")
+        })
+
     })
 
+    it("get request fail is handled properly", async () => {
+        const screen =
+            render(<StoreProvider store={store}>
+                <Form />
+            </StoreProvider>)
+        const failResponse = {
+            status: "failure",
+            error: "Location not accessible by car"
+        }
+        mockAxios.onPost('http://localhost:8080/route').reply(200, { token: token })
+        mockAxios.onGet(`http://localhost:8080/route/${token}`).reply(200, { failResponse });
+        const startingInput = screen.getByPlaceholderText("Starting Location");
+        const dropOffInput = screen.getByPlaceholderText("Drop off point");
+
+        fireEvent.change(startingInput, {
+            target: { value: data.origin },
+        });
+        fireEvent.change(dropOffInput, {
+            target: { value: data.destination },
+        });
+        fireEvent.click(screen.getByText("Submit"));
+
+        waitFor(() => {
+            const status = store.getState().status
+            expect(axios.post).toHaveBeenCalledTimes(1)
+            expect(axios.get).toHaveBeenCalledTimes(1)
+            expect(status).toEqual("fail")
+        })
+
+    })
+
+    it("get request error is handled properly", async () => {
+        const screen =
+            render(<StoreProvider store={store}>
+                <Form />
+            </StoreProvider>)
+
+        mockAxios.onPost('http://localhost:8080/route').reply(200, { token: token })
+        mockAxios.onGet(`http://localhost:8080/route/${token}`).reply(500);
+        const startingInput = screen.getByPlaceholderText("Starting Location");
+        const dropOffInput = screen.getByPlaceholderText("Drop off point");
+
+        fireEvent.change(startingInput, {
+            target: { value: data.origin },
+        });
+        fireEvent.change(dropOffInput, {
+            target: { value: data.destination },
+        });
+        fireEvent.click(screen.getByText("Submit"));
+
+        waitFor(() => {
+            const status = store.getState().status
+            expect(axios.post).toHaveBeenCalledTimes(1)
+            expect(axios.get).toHaveBeenCalledTimes(1)
+            expect(status).toEqual("server error")
+        })
+
+    })
 })
+
