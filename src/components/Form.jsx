@@ -22,10 +22,8 @@ const Form = () => {
     const handleInputChange = (ref, setShowButton) => {
         if (!!ref.current.value) {
             setShowButton(true);
-            console.log('has value');
         } else {
             setShowButton(false);
-            console.log('no value');
         }
     };
 
@@ -90,6 +88,7 @@ const Form = () => {
                             type="text"
                             placeholder="Starting Location" />
                         {showStartButton && <GrClose
+                            data-testid="starting-clear"
                             onClick={() => {
                                 startingRef.current.value = ""
                                 setShowStartButton(false)
@@ -105,6 +104,7 @@ const Form = () => {
                             type="text"
                             placeholder="Drop off point" />
                         {showDropButton && <GrClose
+                            data-testid="dropoff-clear"
                             onClick={() => {
                                 dropOffRef.current.value = ""
                                 setShowDropButton(false)

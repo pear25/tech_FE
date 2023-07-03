@@ -41,7 +41,6 @@ const Map = () => {
 
     //set map based on API result
     useEffect(() => {
-        console.log(polylineRef.current)
         setPolylinePath([])
         const setMap = async () => {
             if (status === 'success' && mapData?.path?.length) {
@@ -61,7 +60,6 @@ const Map = () => {
             if (polylineRef.current != null && polylineRef.current.id === 'polyline') {
                 polylineRef.current.setMap(null); //this doesn't work somehow..
             }
-            console.log('outer')
             setMapEnd(defaultCenter)
             setMapStart(defaultCenter)
         }
