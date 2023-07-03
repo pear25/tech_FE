@@ -28,8 +28,9 @@ Click Close.
 4. Replace newly generated key with "YOUR_API_KEY_HERE" in line 99 (/src/components/Map)
 
 > ## FAQs
-### HOSTED AT: https://tech-fe.vercel.app/
+### HOSTED AT: https://tech-fe.vercel.app/ --> still not working due to internal server issues
 ### GOOGLE_MAP_API_KEY not restricted in .env, issues with Google Maps API
+### API IS STILL USING (http://localhost:8080; see below)
 
 > ## !!!IMPORTANT!!!
 
